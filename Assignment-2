@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import signal
+import sounddevice as sd
+
+
+deltaT = 0.001
+a = 1000*np.pi
+n = np.arange(-15*10**3,15*10**3 +deltaT, deltaT)
+w = np.arange(-15000, 15000, deltaT)
+
+n2 = np.arange(-15*10**3,0,1)
+n3 = np.arange(1,15*10**3+1,1)
+n4 = np.append(n2,n3)
+
+
+#function2 = np.arctan((-2*a**3*w)/(a**4-a**2*w**2))
+
+
+#function3 = np.sqrt(4/(((2*(np.pi/5)*n4))**2))
+
+#function4 = abs((a/(a+1.j*w))**2) #Julles fix
+
+pistep = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
+#pistep1 *=-1
+#print("pistep1", pistep1)
+#pistep2 = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
+#pistep = np.append(pistep1, pistep2)
+n = np.arange(1, len(pistep)+1, 1)
+#plt.plot(n,function4, marker = 'o',label = "x1")
+#xofw = 2*1.j*(-1)**(pistep*5/(2*np.pi))*1/(pistep*5/(2*np.pi))
+xofw = 2*1.j*(-1)**(n)*1/(n)
+#xofw = 2*1/pistep
+#plt.plot(w, np.abs(function), label = "Magnitude")
+#plt.plot(w, np.angle(function), label = "phase")
+#plt.plot(w, function4, label="hej")
+plt.stem(pistep,abs(xofw), label="Amplification")
+#plt.stem(-1*pistep[::-1],abs(xofw)[::-1], label="Amplification" )
+plt.plot()
+plt.show()
+
+plt.stem(pistep, np.angle(xofw), label="phase")
+
+plt.legend()
+plt.show()
+
+
