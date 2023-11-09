@@ -19,8 +19,10 @@ n4 = np.append(n2,n3)
 
 #function3 = np.sqrt(4/(((2*(np.pi/5)*n4))**2))
 
-#function4 = abs((a/(a+1.j*w))**2) #Julles fix
-
+#Habs = abs((a/(a+1.j*w))**2) #Julles fix
+Hang = np.angle((a/(a+1.j*w))**2)
+plt.plot(w, Hang)
+plt.show()
 pistep = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
 #pistep1 *=-1
 #print("pistep1", pistep1)
@@ -34,14 +36,55 @@ xofw = 2*1.j*(-1)**(n)*1/(n)
 #plt.plot(w, np.abs(function), label = "Magnitude")
 #plt.plot(w, np.angle(function), label = "phase")
 #plt.plot(w, function4, label="hej")
-plt.stem(pistep,abs(xofw), label="Amplification")
 #plt.stem(-1*pistep[::-1],abs(xofw)[::-1], label="Amplification" )
+
+
+#Inte CP
+plt.stem(pistep,abs(xofw), label="Amplification")
+lamo = pistep*(-1)
+plt.stem(lamo,abs(xofw), label="Amplification")
+
 plt.plot()
 plt.show()
-
 plt.stem(pistep, np.angle(xofw), label="phase")
+plt.stem(lamo,-1*np.angle(xofw), label="phase")
+
 
 plt.legend()
 plt.show()
 
+#2 C
+#Calculate H(w) at w where X defined
+Y = 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
+plt.stem(n,abs(Y), label = "absY")
+plt.legend()
+plt.show()
 
+plt.stem(n,np.angle(Y), label = "angleY")
+plt.legend()
+plt.show()
+#2 D on these nuts haha
+def BigY(n):
+    return 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
+#Har gränser för summan N
+#Sätt in olika t och beräkna y för dessa
+def yoft(t, N):
+    sum = 0
+    for n in range(-N, N):
+        if n != 0:
+            sum += BigY(n)*np.exp(1.j*n*2*np.pi/5*t)
+    return 1/(2*np.pi)*sum
+t = np.arange(-15*10**1,15*10**1 +0.001, 0.001)
+
+calcedy = yoft(t, 1)
+plt.plot(t, calcedy, label="N=1")
+plt.legend()
+plt.show()
+calcedy = yoft(t, 10)
+plt.plot(t, calcedy, label="N=10")
+plt.legend()
+plt.show()
+calcedy = yoft(t, 20)
+plt.plot(t, calcedy, label="N=20")
+plt.legend()
+plt.show()
