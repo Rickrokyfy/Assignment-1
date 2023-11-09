@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
-import sounddevice as sd
 
 
 deltaT = 0.001
@@ -9,65 +7,64 @@ a = 1000*np.pi
 n = np.arange(-15*10**3,15*10**3 +deltaT, deltaT)
 w = np.arange(-15000, 15000, deltaT)
 
-n2 = np.arange(-15*10**3,0,1)
-n3 = np.arange(1,15*10**3+1,1)
-n4 = np.append(n2,n3)
 
-
-#function2 = np.arctan((-2*a**3*w)/(a**4-a**2*w**2))
-
-
-#function3 = np.sqrt(4/(((2*(np.pi/5)*n4))**2))
-
-#Habs = abs((a/(a+1.j*w))**2) #Julles fix
-Hang = np.angle((a/(a+1.j*w))**2)
-plt.plot(w, Hang)
+#We determine that H is a real valued pole squared
+H = (a/(a+1.j*w))**2
+plt.plot(w, abs(H), label="absH")
+plt.legend()
 plt.show()
-pistep = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
+
+plt.plot(w, np.angle(H), label="angleH")
+plt.legend()
+plt.show()
+pistep = np.arange(2*np.pi/5*1000,15*10**3 +2*np.pi/5, 2*np.pi/5*1000)
+
+
 #pistep1 *=-1
 #print("pistep1", pistep1)
 #pistep2 = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
 #pistep = np.append(pistep1, pistep2)
-n = np.arange(1, len(pistep)+1, 1)
 #plt.plot(n,function4, marker = 'o',label = "x1")
-#xofw = 2*1.j*(-1)**(pistep*5/(2*np.pi))*1/(pistep*5/(2*np.pi))
-xofw = 2*1.j*(-1)**(n)*1/(n)
-#xofw = 2*1/pistep
 #plt.plot(w, np.abs(function), label = "Magnitude")
 #plt.plot(w, np.angle(function), label = "phase")
 #plt.plot(w, function4, label="hej")
 #plt.stem(-1*pistep[::-1],abs(xofw)[::-1], label="Amplification" )
 
+n = np.arange(1, len(pistep)+1, 1)
+xofw = 2*1.j*(-1)**(n)*1/(n)
 
-#Inte CP
-plt.stem(pistep,abs(xofw), label="Amplification")
+
+#Plot transform of input signal
+#Both of these are "hacked" to get the correct plot, this is done by reversing the array (and multiplying by -1 for the phase)
+plt.stem(pistep,abs(xofw), label="absX")
 lamo = pistep*(-1)
-plt.stem(lamo,abs(xofw), label="Amplification")
-
-plt.plot()
+plt.stem(lamo,abs(xofw), label="absX")
+plt.legend()
 plt.show()
-plt.stem(pistep, np.angle(xofw), label="phase")
-plt.stem(lamo,-1*np.angle(xofw), label="phase")
 
-
+plt.plot(pistep, np.angle(xofw), 'o', label="angX", color='blue')
+plt.plot(lamo,-1*np.angle(xofw), 'o', color = 'blue')
 plt.legend()
 plt.show()
 
 #2 C
 #Calculate H(w) at w where X defined
 Y = 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
-plt.stem(n,abs(Y), label = "absY")
+plt.plot(n,abs(Y), 'o' ,label = "absY")
 plt.legend()
 plt.show()
 
-plt.stem(n,np.angle(Y), label = "angleY")
+plt.plot(n,np.angle(Y), 'o', label = "angleY")
 plt.legend()
 plt.show()
 #2 D on these nuts haha
+#Implement a new time vector between -15 and 15
+t = np.arange(-15*10**1,15*10**1 +0.001, 0.001)
+#Function for calculating the fourier transform F for a given n
 def BigY(n):
     return 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
-#Har gränser för summan N
-#Sätt in olika t och beräkna y för dessa
+
+#Calculate the inverse fourier transform of Y for a given t and N
 def yoft(t, N):
     sum = 0
     for n in range(-N, N):
@@ -77,6 +74,8 @@ def yoft(t, N):
 t = np.arange(-15*10**1,15*10**1 +0.001, 0.001)
 
 calcedy = yoft(t, 1)
+
+#Plot the inverse fourier transform for N = 1, 10, 20
 plt.plot(t, calcedy, label="N=1")
 plt.legend()
 plt.show()
