@@ -1,6 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.signal as signal
 
+start = 0
+stop = 0.015
+dt = 0.00001
+T0 = 0.005
+
+
+t1 = np.arange(start, stop, dt) # Generate a time vector 't'
+
+
+xt_odd = signal.sawtooth(2 * np.pi * 1/T0 * t1 - np.pi)
+xt_even = t1 * 0
+
+fig, ax = plt.subplots()
+ax.plot(t1, xt_even, label='Even(t)')
+ax.plot(t1, xt_odd, label='Odd(t)')
+ax.set_xlabel('t(s)')
+ax.set_ylabel('Amplitude')
+plt.title('Linearity check')
+plt.grid()
+plt.legend()
+plt.show() 
 
 deltaT = 0.01
 a = 1000*np.pi
@@ -40,23 +62,23 @@ xofw = 2*1.j*(-1)**(n)*1/(n)
 
 #Plot transform of input signal
 #Both of these are "hacked" to get the correct plot, this is done by reversing the array (and multiplying by -1 for the phase)
-plt.stem(pistep,abs(xofw))
-plt.title("Magnitude of Fourier transformation of input signal, X($\omega$)")
-plt.xlabel('$\omega$/rad/s')
-plt.ylabel("|X($\omega$)|")
+# plt.stem(pistep,abs(xofw))
+# plt.title("Magnitude of Fourier transformation of input signal, X($\omega$)")
+# plt.xlabel('$\omega$/rad/s')
+# plt.ylabel("|X($\omega$)|")
 lamo = pistep*(-1)
-plt.stem(lamo,abs(xofw))
-plt.legend()
-plt.show()
+# plt.stem(lamo,abs(xofw))
+# plt.legend()
+# plt.show()
 #plot phase of input signal
 #This is hacked to produce the correct plot, this is done by reversing the array
-plt.stem(pistep, np.angle(xofw))
-plt.stem(lamo,-1*np.angle(xofw))
-plt.title("Phase of Fourier transformation of input signal X($\omega$)")
-plt.xlabel('$\omega$/rad/s')
-plt.ylabel("angle(X($\omega$)) (rad)")
-plt.legend()
-plt.show()
+# plt.stem(pistep, np.angle(xofw))
+# plt.stem(lamo,-1*np.angle(xofw))
+# plt.title("Phase of Fourier transformation of input signal X($\omega$)")
+# plt.xlabel('$\omega$/rad/s')
+# plt.ylabel("angle(X($\omega$)) (rad)")
+# plt.legend()
+# plt.show()
 
 #2 C
 #Calculate H(w) at w where X defined
@@ -64,23 +86,26 @@ Y = 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5*1000)))**2
 plt.stem(n*1000*2*np.pi/5,abs(Y))
 
 #Hack to show mirrored opposite side
-plt.stem(-n*1000*2*np.pi/5,abs(Y))
-plt.title("Magnitude of Fourier transformation of output signal Y($\omega$)")
+plt.stem(-n*1000*2*np.pi/5,abs(Y), label = "|Y($\omega$)|")
+plt.stem(pistep,abs(xofw), label = "|X($\omega$)|", linefmt='C1--')
+plt.stem(lamo,np.abs(xofw), linefmt='C1--')
+
+plt.title("Magnitude of Fourier transformation of input and output signals, X($\omega$) Y($\omega$)")
 plt.xlabel('$\omega$/rad/s')
-plt.ylabel("|Y($\omega$)|")
+plt.ylabel("Amplification")
 plt.legend()
 plt.show()
 
 plt.stem(n*1000*2*np.pi/5,np.angle(Y), label = "")
-plt.title("Phase of Fourier transformation of output signal Y($\omega$)")
+plt.title("Phase of Fourier transformation of input and output signals, X($\omega$) Y($\omega$)")
 plt.xlabel('$\omega$/rad/s')
-plt.ylabel("angle(Y($\omega$)) (rad)")
-plt.stem(-n*1000*2*np.pi/5,-np.angle(Y))
+plt.ylabel("Radians")
+plt.stem(-n*1000*2*np.pi/5,-np.angle(Y), label="|Y($\omega$)|")
+plt.stem(pistep,np.angle(xofw), label = "|X($\omega$)|", linefmt='C1--')
+plt.stem(lamo,np.angle(xofw), linefmt='C1--')
 plt.legend()
 plt.show()
 #2 D on these nuts haha
-#Implement a new time vector between -15 and 15
-t = np.arange(-15*10**-3,15*10**-3 +0.00001, 0.00001)
 #Function for calculating the fourier transform F for a given n
 def BigY(n):
     if(n == 0):
@@ -93,35 +118,35 @@ def yoft(t, N):
     for n in range(-N, N+1):
         sum += BigY(n)*np.exp(1.j*n*2*np.pi/5*1000*t)
     return 1/(2*np.pi)*np.real(sum)
-t = np.arange(-15*10**-3,15*10**-3 +0.001, 0.000001)
+t = np.arange(0,15*10**-3 +0.001, 0.000001)
 
 
 #Plot the inverse fourier transform for N = 1,2, 10, 20
 calcedy = yoft(t, 1)
 plt.plot(t, calcedy, label="N=1")
-plt.title("Inverse fourier transform of Y(t) with 1 component")
+plt.title("Inverse fourier transforms of Y(t) with N componets")
 plt.ylabel("y(t)")
 plt.xlabel("t / ms")
 plt.legend()
-plt.show()
+#plt.show()
 calcedy = yoft(t, 2)
 plt.plot(t, calcedy, label="N=2")
-plt.title("Inverse fourier transform of Y(t) with 2 components")
+#plt.title("Inverse fourier transform of Y(t) with 2 components")
 plt.ylabel("y(t)")
-plt.xlabel("t / ms")
-plt.legend()
-plt.show()
+plt.xlabel("t / s")
+#plt.legend()
+#plt.show()
 calcedy = yoft(t, 10)
-plt.title("Inverse fourier transform of Y(t) with 10 components")
+#plt.title("Inverse fourier transform of Y(t) with 10 components")
 plt.plot(t, calcedy, label="N=10")
 plt.ylabel("y(t)")
-plt.xlabel("t / ms")
+plt.xlabel("t / s")
 plt.legend()
-plt.show()
+#plt.show()
 calcedy = yoft(t, 20)
-plt.title("Inverse fourier transform of Y(t) with 20 components")
+#plt.title("Inverse fourier transform of Y(t) with 20 components")
 plt.plot(t, calcedy, label="N=20")
 plt.ylabel("y(t)")
-plt.xlabel("t / ms")
+plt.xlabel("t /s")
 plt.legend()
 plt.show()
