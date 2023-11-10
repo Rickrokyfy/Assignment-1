@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-deltaT = 0.001
+deltaT = 0.01
 a = 1000*np.pi
 n = np.arange(-15*10**3,15*10**3 +deltaT, deltaT)
 w = np.arange(-15000, 15000, deltaT)
@@ -19,11 +19,6 @@ plt.legend()
 plt.show()
 pistep = np.arange(2*np.pi/5*1000,15*10**3 +2*np.pi/5, 2*np.pi/5*1000)
 
-
-#pistep1 *=-1
-#print("pistep1", pistep1)
-#pistep2 = np.arange(2*np.pi/5,15*10**3 +2*np.pi/5, 2*np.pi/5)
-#pistep = np.append(pistep1, pistep2)
 #plt.plot(n,function4, marker = 'o',label = "x1")
 #plt.plot(w, np.abs(function), label = "Magnitude")
 #plt.plot(w, np.angle(function), label = "phase")
@@ -36,54 +31,75 @@ xofw = 2*1.j*(-1)**(n)*1/(n)
 
 #Plot transform of input signal
 #Both of these are "hacked" to get the correct plot, this is done by reversing the array (and multiplying by -1 for the phase)
-plt.stem(pistep,abs(xofw), label="absX")
+plt.stem(pistep,abs(xofw),  label="absX")
 lamo = pistep*(-1)
-plt.stem(lamo,abs(xofw), label="absX")
+plt.stem(lamo,abs(xofw))
 plt.legend()
 plt.show()
-
-plt.plot(pistep, np.angle(xofw), 'o', label="angX", color='blue')
-plt.plot(lamo,-1*np.angle(xofw), 'o', color = 'blue')
+#plot phase of input signal
+#This is hacked to produce the correct plot, this is done by reversing the array
+plt.stem(pistep, np.angle(xofw), label="angX")
+plt.stem(lamo,-1*np.angle(xofw))
 plt.legend()
 plt.show()
 
 #2 C
 #Calculate H(w) at w where X defined
-Y = 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
-plt.plot(n,abs(Y), 'o' ,label = "absY")
+Y = 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5*1000)))**2
+plt.stem(n*1000*2*np.pi/5,abs(Y),label = "absY")
+#Hack to show mirrored opposite side
+plt.stem(-n*1000*2*np.pi/5,abs(Y))
 plt.legend()
 plt.show()
 
-plt.plot(n,np.angle(Y), 'o', label = "angleY")
+plt.stem(n*1000*2*np.pi/5,np.angle(Y), label = "angleY")
+plt.stem(-n*1000*2*np.pi/5,-np.angle(Y))
 plt.legend()
 plt.show()
 #2 D on these nuts haha
 #Implement a new time vector between -15 and 15
-t = np.arange(-15*10**1,15*10**1 +0.001, 0.001)
+t = np.arange(-15*10**-3,15*10**-3 +0.00001, 0.00001)
 #Function for calculating the fourier transform F for a given n
 def BigY(n):
-    return 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5)))**2
+    if(n == 0):
+        return 0
+    return 2*1.j*(-1)**(n)*1/(n) * (a/(a+1.j*(n*2*np.pi/5*1000)))**2
 
 #Calculate the inverse fourier transform of Y for a given t and N
 def yoft(t, N):
     sum = 0
-    for n in range(-N, N):
-        if n != 0:
-            sum += BigY(n)*np.exp(1.j*n*2*np.pi/5*t)
-    return 1/(2*np.pi)*sum
-t = np.arange(-15*10**1,15*10**1 +0.001, 0.001)
+    for n in range(-N, N+1):
+        sum += BigY(n)*np.exp(1.j*n*2*np.pi/5*1000*t)
+    return 1/(2*np.pi)*np.real(sum)
+t = np.arange(-15*10**-3,15*10**-3 +0.001, 0.000001)
 
+
+#Plot the inverse fourier transform for N = 1,2, 10, 20
 calcedy = yoft(t, 1)
-
-#Plot the inverse fourier transform for N = 1, 10, 20
 plt.plot(t, calcedy, label="N=1")
+plt.title("Fourier transform of Y(t) with 1 component")
+plt.ylabel("y(t)")
+plt.xlabel("t/ms")
+plt.legend()
+plt.show()
+calcedy = yoft(t, 2)
+plt.plot(t, calcedy, label="N=2")
+plt.title("Fourier transform of Y(t) with 2 components")
+plt.ylabel("y(t)")
+plt.xlabel("t/ms")
 plt.legend()
 plt.show()
 calcedy = yoft(t, 10)
+plt.title("Fourier transform of Y(t) with 10 components")
 plt.plot(t, calcedy, label="N=10")
+plt.ylabel("y(t)")
+plt.xlabel("t/ms")
 plt.legend()
 plt.show()
 calcedy = yoft(t, 20)
+plt.title("Fourier transform of Y(t) with 20 components")
 plt.plot(t, calcedy, label="N=20")
+plt.ylabel("y(t)")
+plt.xlabel("t/ms")
 plt.legend()
 plt.show()
